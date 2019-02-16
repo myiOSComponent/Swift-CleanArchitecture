@@ -14,7 +14,14 @@ final class DIContainerTests: XCTestCase {
         let name: String
         let id: String = UUID().uuidString
     }
-    
+
+    private struct MultipleArgsDummyTest: Equatable {
+        let name: String
+        let city: String
+        let state: String
+        let country: String
+    }
+
     func testContainerResolvesRegisteredClasses() {
         let container = DIContainer()
         
@@ -63,5 +70,130 @@ final class DIContainerTests: XCTestCase {
         }
         
         XCTAssertTrue(container.contains(DummyTest.self), "container should contain the registered factory")
+    }
+}
+
+extension DIContainerTests {
+    // MARK: - Test One Argument
+
+    func testContainerContainsRegisteredFactoryClassWithSingleArgument() {
+        let container = DIContainer()
+
+        XCTAssertFalse(container.contains(DummyTest.self))
+
+        container.register(DummyTest.self) { di, name -> DummyTest in
+            return DummyTest(name: name)
+        }
+
+        XCTAssertTrue(container.contains(DummyTest.self), "container should contain the registered factory")
+    }
+
+    func testContainerResolveFactoryClassWithSingleArgument() {
+        let container = DIContainer()
+
+        XCTAssertFalse(container.contains(DummyTest.self))
+
+        container.register(DummyTest.self) { di, name -> DummyTest in
+            return DummyTest(name: name)
+        }
+
+        let resolved = container.resolve(DummyTest.self, argument: "Some name")
+        XCTAssertEqual(resolved.name, "Some name")
+    }
+}
+
+extension DIContainerTests {
+    // MARK: - Test Two Argument
+
+    func testContainerContainsRegisteredFactoryClassWithTwoArguments() {
+        let container = DIContainer()
+
+        XCTAssertFalse(container.contains(MultipleArgsDummyTest.self))
+
+        container.register(MultipleArgsDummyTest.self) { di, name, city -> MultipleArgsDummyTest in
+            return MultipleArgsDummyTest(name: name, city: city, state: "NSW", country: "Australia")
+        }
+
+        XCTAssertTrue(container.contains(MultipleArgsDummyTest.self), "container should contain the registered factory")
+    }
+
+    func testContainerResolveFactoryClassWithTwoArguments() {
+        let container = DIContainer()
+
+        XCTAssertFalse(container.contains(DummyTest.self))
+
+        container.register(MultipleArgsDummyTest.self) { di, name, city -> MultipleArgsDummyTest in
+            return MultipleArgsDummyTest(name: name, city: city, state: "NSW", country: "Australia")
+        }
+
+        let resolved = container.resolve(MultipleArgsDummyTest.self, arguments: "Some name", "Sydney")
+        XCTAssertEqual(resolved.name, "Some name")
+        XCTAssertEqual(resolved.city, "Sydney")
+        XCTAssertEqual(resolved.state, "NSW")
+        XCTAssertEqual(resolved.country, "Australia")
+    }
+}
+
+extension DIContainerTests {
+    // MARK: - Test Three Argument
+
+    func testContainerContainsRegisteredFactoryClassWithThreeArguments() {
+        let container = DIContainer()
+
+        XCTAssertFalse(container.contains(MultipleArgsDummyTest.self))
+
+        container.register(MultipleArgsDummyTest.self) { di, name, city, state -> MultipleArgsDummyTest in
+            return MultipleArgsDummyTest(name: name, city: city, state: state, country: "Australia")
+        }
+
+        XCTAssertTrue(container.contains(MultipleArgsDummyTest.self), "container should contain the registered factory")
+    }
+
+    func testContainerResolveFactoryClassWithThreeArguments() {
+        let container = DIContainer()
+
+        XCTAssertFalse(container.contains(DummyTest.self))
+
+        container.register(MultipleArgsDummyTest.self) { di, name, city, state -> MultipleArgsDummyTest in
+            return MultipleArgsDummyTest(name: name, city: city, state: state, country: "Australia")
+        }
+
+        let resolved = container.resolve(MultipleArgsDummyTest.self, arguments: "Some name", "Sydney", "NSW")
+        XCTAssertEqual(resolved.name, "Some name")
+        XCTAssertEqual(resolved.city, "Sydney")
+        XCTAssertEqual(resolved.state, "NSW")
+        XCTAssertEqual(resolved.country, "Australia")
+    }
+}
+
+extension DIContainerTests {
+    // MARK: - Test Three Argument
+
+    func testContainerContainsRegisteredFactoryClassWithFourArguments() {
+        let container = DIContainer()
+
+        XCTAssertFalse(container.contains(MultipleArgsDummyTest.self))
+
+        container.register(MultipleArgsDummyTest.self) { di, name, city, state, country -> MultipleArgsDummyTest in
+            return MultipleArgsDummyTest(name: name, city: city, state: state, country: country)
+        }
+
+        XCTAssertTrue(container.contains(MultipleArgsDummyTest.self), "container should contain the registered factory")
+    }
+
+    func testContainerResolveFactoryClassWithFourArguments() {
+        let container = DIContainer()
+
+        XCTAssertFalse(container.contains(DummyTest.self))
+
+        container.register(MultipleArgsDummyTest.self) { di, name, city, state, country -> MultipleArgsDummyTest in
+            return MultipleArgsDummyTest(name: name, city: city, state: state, country: country)
+        }
+
+        let resolved = container.resolve(MultipleArgsDummyTest.self, arguments: "Some name", "Sydney", "NSW", "Australia")
+        XCTAssertEqual(resolved.name, "Some name")
+        XCTAssertEqual(resolved.city, "Sydney")
+        XCTAssertEqual(resolved.state, "NSW")
+        XCTAssertEqual(resolved.country, "Australia")
     }
 }
